@@ -154,6 +154,7 @@ impl PercentageWithCapProofContext {
 #[cfg(test)]
 mod test {
     use {super::*, crate::encryption::pedersen::Pedersen, curve25519_dalek::scalar::Scalar};
+    use easy_hex::HexExt;
 
     #[test]
     fn test_percentage_with_cap_instruction_correctness() {
@@ -189,6 +190,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
 
         // base amount is equal to max value
@@ -222,6 +224,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
     }
 }

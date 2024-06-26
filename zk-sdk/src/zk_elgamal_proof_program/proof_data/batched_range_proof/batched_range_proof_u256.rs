@@ -120,6 +120,8 @@ mod test {
             zk_elgamal_proof_program::errors::ProofVerificationError,
         },
     };
+    use bytemuck::bytes_of;
+    use easy_hex::HexExt;
 
     #[test]
     fn test_batched_range_proof_256_instruction_correctness() {
@@ -163,6 +165,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
 
         let amount_1 = 4294967296_u64; // not representable as a 32-bit number
@@ -205,6 +208,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert_eq!(
             proof_data.verify_proof().unwrap_err(),
             ProofVerificationError::RangeProof(RangeProofVerificationError::AlgebraicRelation),

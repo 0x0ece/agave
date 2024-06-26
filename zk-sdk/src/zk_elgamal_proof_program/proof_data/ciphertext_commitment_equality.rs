@@ -127,6 +127,7 @@ mod test {
         super::*,
         crate::encryption::{elgamal::ElGamalKeypair, pedersen::Pedersen},
     };
+    use easy_hex::HexExt;
 
     #[test]
     fn test_ctxt_comm_equality_proof_correctness() {
@@ -144,6 +145,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
     }
 }

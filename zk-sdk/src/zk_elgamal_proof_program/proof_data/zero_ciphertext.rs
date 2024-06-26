@@ -105,6 +105,7 @@ impl ZeroCiphertextProofContext {
 #[cfg(test)]
 mod test {
     use super::*;
+    use easy_hex::HexExt;
 
     #[test]
     fn test_zero_ciphertext_proof_instruction_correctness() {
@@ -115,11 +116,13 @@ mod test {
         let zero_ciphertext_proof_data =
             ZeroCiphertextProofData::new(&keypair, &ciphertext).unwrap();
         assert!(zero_ciphertext_proof_data.verify_proof().is_ok());
+        println!("{}", bytes_of(&zero_ciphertext_proof_data).into_hex());
 
         // general case: encryption of > 0
         let ciphertext = keypair.pubkey().encrypt(1_u64);
         let zero_ciphertext_proof_data =
             ZeroCiphertextProofData::new(&keypair, &ciphertext).unwrap();
+        println!("{}", bytes_of(&zero_ciphertext_proof_data).into_hex());
         assert!(zero_ciphertext_proof_data.verify_proof().is_err());
     }
 }

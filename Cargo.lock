@@ -1982,6 +1982,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abe71d579d1812060163dff96056261deb5bf6729b100fa2e36a68b9649ba3d3"
 
 [[package]]
+name = "easy-hex"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfe7879851c69bcfbda37f77c72bf02f325d9cedcdd3af11899fa4ee09ff50f2"
+dependencies = [
+ "bytemuck",
+ "hex",
+ "serde",
+]
+
+[[package]]
 name = "ed25519"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7908,6 +7919,7 @@ dependencies = [
  "bytemuck",
  "bytemuck_derive",
  "curve25519-dalek",
+ "easy-hex",
  "itertools 0.12.1",
  "lazy_static",
  "merlin",

@@ -18,6 +18,7 @@ num-derive = { workspace = true }
 num-traits = { workspace = true }
 solana-program = { workspace = true }
 thiserror = { workspace = true }
+easy-hex = "1.0.0"
 
 [dev-dependencies]
 tiny-bip39 = { workspace = true }

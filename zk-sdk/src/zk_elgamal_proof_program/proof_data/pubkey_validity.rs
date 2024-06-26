@@ -91,12 +91,14 @@ impl PubkeyValidityProofContext {
 #[cfg(test)]
 mod test {
     use super::*;
+    use easy_hex::HexExt;
 
     #[test]
     fn test_pubkey_validity_instruction_correctness() {
         let keypair = ElGamalKeypair::new_rand();
 
         let pubkey_validity_data = PubkeyValidityProofData::new(&keypair).unwrap();
+        println!("{}", bytes_of(&pubkey_validity_data).into_hex());
         assert!(pubkey_validity_data.verify_proof().is_ok());
     }
 }

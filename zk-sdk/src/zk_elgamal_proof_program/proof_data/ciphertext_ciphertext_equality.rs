@@ -141,6 +141,7 @@ impl CiphertextCiphertextEqualityProofContext {
 #[cfg(test)]
 mod test {
     use super::*;
+    use easy_hex::HexExt;
 
     #[test]
     fn test_ciphertext_ciphertext_instruction_correctness() {
@@ -165,6 +166,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
 
         let amount: u64 = 55;
@@ -185,6 +187,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
 
         let amount = u64::MAX;
@@ -205,6 +208,7 @@ mod test {
         )
         .unwrap();
 
+        println!("{}", bytes_of(&proof_data).into_hex());
         assert!(proof_data.verify_proof().is_ok());
     }
 }

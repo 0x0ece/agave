@@ -828,6 +828,10 @@ pub mod zk_elgamal_proof_program_enabled {
     solana_sdk::declare_id!("zkhiy5oLowR7HY4zogXjCjeMXyruLqBwSWH21qcFtnv");
 }
 
+pub mod ed25519_precompile_verify_strict {
+    solana_sdk::declare_id!("ed9tNscbWLYBooxWA7FE2B5KHWs8A6sxfY8EzezEcoo");
+}
+
 lazy_static! {
     /// Map of feature identifiers to user-visible description
     pub static ref FEATURE_NAMES: HashMap<Pubkey, &'static str> = [
@@ -1030,6 +1034,7 @@ lazy_static! {
         (enable_get_epoch_stake_syscall::id(), "Enable syscall: sol_get_epoch_stake #884"),
         (migrate_address_lookup_table_program_to_core_bpf::id(), "Migrate Address Lookup Table program to Core BPF #1651"),
         (zk_elgamal_proof_program_enabled::id(), "Enable ZkElGamalProof program SIMD-0153"),
+        (ed25519_precompile_verify_strict::id(), "Use strict verification in ed25519 precompile SIMD-0152"),
         /*************** ADD NEW FEATURES HERE ***************/
     ]
     .iter()

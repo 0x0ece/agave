@@ -2439,6 +2439,7 @@ impl ReplayStage {
             datapoint_info!("replay_stage-voted_empty_bank", ("slot", bank.slot(), i64));
         }
         trace!("handle votable bank {}", bank.slot());
+        tower.backup_last_vote_state();
         let new_root = tower.record_bank_vote(bank);
 
         if let Some(new_root) = new_root {
@@ -2522,19 +2523,36 @@ impl ReplayStage {
         update_commitment_cache_time.stop();
         replay_timing.update_commitment_cache_us += update_commitment_cache_time.as_us();
 
-        Self::push_vote(
-            bank,
-            vote_account_pubkey,
-            identity_keypair,
-            authorized_voter_keypairs,
-            tower,
-            switch_fork_decision,
-            vote_signatures,
-            *has_new_vote_been_rooted,
-            replay_timing,
-            voting_sender,
-            wait_to_vote_slot,
-        );
+        let slot = bank.slot();
+        let parent_slot = bank.parent_slot();
+        let parent_parent_slot = bank.parent().map(|p| p.parent_slot());
+        let votes_len = tower.vote_state.votes.len();
+        let vote_slot = tower.vote_state.votes.get(votes_len.wrapping_sub(1)).map(|v| v.slot());
+        let vote_prev_slot = tower.vote_state.votes.get(votes_len.wrapping_sub(2)).map(|v| v.slot());
+        if slot - 8 < parent_slot && parent_slot < slot - 4
+            && parent_parent_slot.is_some_and(|parent_parent_slot| parent_parent_slot == parent_slot-1)
+            && vote_slot.is_some_and(|vote_slot| vote_slot == slot)
+            && vote_prev_slot.is_some_and(|vote_prev_slot| vote_prev_slot < parent_slot)
+        {
+            warn!("skip slot={} vote={:?} | parent={} prev={:?} | parent_parent={:?}", slot, vote_slot, parent_slot, vote_prev_slot, parent_parent_slot);
+            tower.restore_last_vote_state();
+            tower.vote_state.process_next_vote_slot_no_pop(parent_slot);
+            tower.vote_state.process_next_vote_slot_no_pop(slot);
+        } else {
+            Self::push_vote(
+                bank,
+                vote_account_pubkey,
+                identity_keypair,
+                authorized_voter_keypairs,
+                tower,
+                switch_fork_decision,
+                vote_signatures,
+                *has_new_vote_been_rooted,
+                replay_timing,
+                voting_sender,
+                wait_to_vote_slot,
+            );
+        }
         Ok(())
     }
 

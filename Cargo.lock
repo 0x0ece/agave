@@ -7589,7 +7589,7 @@ dependencies = [
 
 [[package]]
 name = "solana-bundle"
-version = "3.0.8"
+version = "3.0.14"
 dependencies = [
  "assert_matches",
  "itertools 0.12.1",

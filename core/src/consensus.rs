@@ -219,6 +219,7 @@ pub struct Tower {
     pub(crate) threshold_depth: usize,
     threshold_size: f64,
     pub(crate) vote_state: TowerVoteState,
+    pub(crate) last_vote_state: TowerVoteState,
     last_vote: VoteTransaction,
     // The blockhash used in the last vote transaction, may or may not equal the
     // blockhash of the voted block itself, depending if the vote slot was refreshed.
@@ -244,6 +245,7 @@ impl Default for Tower {
             threshold_depth: VOTE_THRESHOLD_DEPTH,
             threshold_size: VOTE_THRESHOLD_SIZE,
             vote_state: TowerVoteState::default(),
+            last_vote_state: TowerVoteState::default(),
             last_vote: VoteTransaction::from(TowerSync::default()),
             last_timestamp: BlockTimestamp::default(),
             last_vote_tx_blockhash: BlockhashStatus::default(),
@@ -283,6 +285,7 @@ impl From<Tower1_14_11> for Tower {
             threshold_depth: tower.threshold_depth,
             threshold_size: tower.threshold_size,
             vote_state: TowerVoteState::from(tower.vote_state),
+            last_vote_state: TowerVoteState::default(),
             last_vote: tower.last_vote,
             last_vote_tx_blockhash: tower.last_vote_tx_blockhash,
             last_timestamp: tower.last_timestamp,
@@ -301,6 +304,7 @@ impl From<Tower1_7_14> for Tower {
             threshold_depth: tower.threshold_depth,
             threshold_size: tower.threshold_size,
             vote_state: TowerVoteState::from(tower.vote_state),
+            last_vote_state: TowerVoteState::default(),
             last_vote: box_last_vote,
             last_vote_tx_blockhash: tower.last_vote_tx_blockhash,
             last_timestamp: tower.last_timestamp,
@@ -623,6 +627,7 @@ impl Tower {
             // here that this is our leader bank.
             Hash::default()
         });
+
         self.record_bank_vote_and_update_lockouts(
             bank.slot(),
             bank.hash(),
@@ -657,6 +662,25 @@ impl Tower {
 
         new_vote.set_timestamp(self.maybe_timestamp(self.last_voted_slot().unwrap_or_default()));
         self.last_vote = new_vote;
+    }
+
+    pub fn backup_last_vote_state(&mut self) {
+        self.last_vote_state = TowerVoteState {
+            votes: self.vote_state.votes.clone()
+                .into_iter()
+                .map(|lockout| lockout.into())
+                .collect(),
+            root_slot: self.vote_state.root_slot,
+        };
+    }
+    pub fn restore_last_vote_state(&mut self) {
+        self.vote_state = TowerVoteState {
+            votes: self.last_vote_state.votes.clone()
+                .into_iter()
+                .map(|lockout| lockout.into())
+                .collect(),
+            root_slot: self.last_vote_state.root_slot,
+        };
     }
 
     fn record_bank_vote_and_update_lockouts(
